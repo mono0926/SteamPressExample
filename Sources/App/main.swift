@@ -6,6 +6,7 @@ import Foundation
 import VaporSecurityHeaders
 import LeafProvider
 import FluentProvider
+import MySQLProvider
 
 let config = try Config()
 let disqusName = config["disqus", "disqusName"]?.string ?? "*"
@@ -29,9 +30,9 @@ config.addConfigurable(middleware: BlogErrorMiddleware.init, name: "blog-error")
 try config.addProvider(SteamPress.Provider.self)
 try config.addProvider(LeafProvider.Provider.self)
 try config.addProvider(FluentProvider.Provider.self)
+try config.addProvider(MySQLProvider.Provider.self)
 
 let drop = try Droplet(config)
-let database = try Database(MemoryDriver())
 
 drop.get { req in
     var posts = try BlogPost.makeQuery().filter("published", true).sort("created", .descending).limit(3).all()
